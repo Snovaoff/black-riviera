@@ -2,12 +2,14 @@ import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: "2024-06-20" });
 
-// ✅ MVP: mapping chauffeurs (tu mettras les vrais emails plus tard)
-const DRIVERS = {
-  alex:  { name: "Alex",  email: "alex@example.com"  },
-  mehdi: { name: "Mehdi", email: "mehdi@example.com" },
-  sarah: { name: "Sarah", email: "sarah@example.com" }
-};
+/**
+ * Chauffeur unique (solo) :
+ * Renseigne ces variables dans Netlify > Environment variables
+ * - DRIVER_NAME  (ex: "Black Riviera")
+ * - DRIVER_EMAIL (ex: "contact@blackriviera.fr")
+ */
+const DRIVER_NAME = process.env.DRIVER_NAME || "Chauffeur";
+const DRIVER_EMAIL = process.env.DRIVER_EMAIL || "";
 
 export const handler = async (event) => {
   try {
@@ -24,17 +26,15 @@ export const handler = async (event) => {
       date,
       time,
       vehicle,
-      price,
-      driverKey
+      price
     } = body;
 
-    if (!customerName || !customerPhone || !pickupAddress || !dropoffAddress || !date || !time || !vehicle || !price || !driverKey) {
+    if (!customerName || !customerPhone || !pickupAddress || !dropoffAddress || !date || !time || !vehicle || !price) {
       return { statusCode: 400, body: JSON.stringify({ error: "Missing fields" }) };
     }
 
-    const driver = DRIVERS[String(driverKey).toLowerCase()];
-    if (!driver) {
-      return { statusCode: 400, body: JSON.stringify({ error: "Invalid driver" }) };
+    if (!DRIVER_EMAIL) {
+      return { statusCode: 500, body: JSON.stringify({ error: "DRIVER_EMAIL not configured on Netlify" }) };
     }
 
     const session = await stripe.checkout.sessions.create({
@@ -52,9 +52,8 @@ export const handler = async (event) => {
         }
       ],
       metadata: {
-        driverKey: String(driverKey),
-        driverName: driver.name,
-        driverEmail: driver.email,
+        driverName: DRIVER_NAME,
+        driverEmail: DRIVER_EMAIL,
         customerName,
         customerPhone,
         pickupAddress,
@@ -71,3 +70,4 @@ export const handler = async (event) => {
     return { statusCode: 500, body: JSON.stringify({ error: "Server error", details: String(e?.message || e) }) };
   }
 };
+
