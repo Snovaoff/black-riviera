@@ -45,19 +45,31 @@ body{
   border:1px solid var(--border);
 }
 
+/* Titres premium + ligne dorée */
 h2,h3{
   text-align:center;
-  margin:10px 0;
+  margin:16px 0 10px;
   letter-spacing:1px;
   font-family:'Playfair Display', serif;
   color:var(--primary);
+  position:relative;
 }
+h2::after, h3::after{
+  content:"";
+  display:block;
+  height:1px;
+  width:70%;
+  margin:10px auto 0;
+  background: linear-gradient(90deg, transparent, rgba(212,175,55,.9), transparent);
+}
+h3{ margin-top:22px; }
+h3::after{ width:55%; margin-top:8px; }
 
 /* Stepper */
 .stepper{
   display:flex;
   gap:8px;
-  margin:6px 0 14px;
+  margin:6px 0 18px;
   justify-content:center;
   align-items:center;
 }
@@ -126,6 +138,33 @@ input:focus, select:focus{
   line-height:1.3;
 }
 
+/* ✅ Date : icône blanche custom (Chrome PC) */
+.date-wrap{
+  position:relative;
+}
+.date-wrap input[type="date"]{
+  padding-right:44px; /* place pour l'icône */
+}
+.date-wrap input[type="date"]::-webkit-calendar-picker-indicator{
+  opacity:0;                 /* on cache l’icône native */
+  display:block;
+  position:absolute;
+  right:12px;
+  width:24px;
+  height:24px;
+  cursor:pointer;
+}
+.date-ico{
+  position:absolute;
+  right:14px;
+  top:50%;
+  transform:translateY(-50%);
+  color:#fff;
+  opacity:.9;
+  font-size:18px;
+  pointer-events:none; /* le clic passe au champ */
+}
+
 /* Buttons */
 .btn{
   width:100%;
@@ -166,14 +205,14 @@ input:focus, select:focus{
 .select-grid{
   display:flex;
   justify-content:space-around;
-  gap:10px;
-  margin:10px 0 6px;
+  gap:12px;
+  margin:14px 0 6px;
 }
 .select-wrap{
   display:flex;
   flex-direction:column;
   align-items:center;
-  gap:6px;
+  gap:7px;
   width:33%;
 }
 .select-item{
@@ -192,14 +231,34 @@ input:focus, select:focus{
   border-color:var(--primary);
   box-shadow:0 0 20px rgba(212,175,55,.35), 0 14px 28px rgba(0,0,0,.35);
 }
-.select-item.disabled{
-  opacity:.35; cursor:not-allowed; filter:grayscale(1);
-}
 .mini-label{
   font-size:12px;
   color:var(--muted);
   text-align:center;
 }
+
+/* ✅ Véhicules : enlever le rond gris, laisser juste l’icône blanche */
+#vehiculeGrid .select-item{
+  width:56px;
+  height:56px;
+  border:none !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  filter: invert(1);
+  transition: transform .2s ease, filter .2s ease;
+}
+#vehiculeGrid .select-item:hover{
+  transform: translateY(-1px);
+}
+#vehiculeGrid .select-item.selected{
+  transform: scale(1.15);
+  filter: invert(1) drop-shadow(0 0 8px rgba(212,175,55,.85));
+}
+
+/* Espace entre véhicule et bouton Estimer */
+#vehiculeGrid{ margin-bottom:14px; }
+#reservationBox .btn-primary{ margin-top:16px; }
 
 /* Map & recap */
 #map{
@@ -320,7 +379,6 @@ input:focus, select:focus{
 
 /* Responsive tweaks */
 @media (max-width:380px){
-  .select-item{ width:58px; height:58px; }
   .k{ min-width:105px; }
 }
 </style>
@@ -361,16 +419,17 @@ input:focus, select:focus{
 
     <div class="field">
       <label>Date</label>
-      <input type="date" id="date" />
+      <!-- ✅ wrapper + icône blanche -->
+      <div class="date-wrap">
+        <input type="date" id="date" />
+        <span class="date-ico" aria-hidden="true">📅</span>
+      </div>
     </div>
 
     <div class="field">
       <label>Heure</label>
       <select id="heure"></select>
     </div>
-
-    <h3>Chauffeur</h3>
-    <div class="select-grid" id="chauffeurGrid"></div>
 
     <h3>Véhicule</h3>
     <div class="select-grid" id="vehiculeGrid"></div>
@@ -388,7 +447,6 @@ input:focus, select:focus{
       <div class="row"><div class="k">📍 Départ</div><div class="v" id="rDepart"></div></div>
       <div class="row"><div class="k">🏁 Arrivée</div><div class="v" id="rArrivee"></div></div>
       <div class="row"><div class="k">🕒 Date/Heure</div><div class="v" id="rDateHeure"></div></div>
-      <div class="row"><div class="k">🧑‍✈️ Chauffeur</div><div class="v" id="rChauffeur"></div></div>
       <div class="row"><div class="k">🚘 Véhicule</div><div class="v" id="rVehicule"></div></div>
       <div class="row"><div class="k">🛣️ Trajet</div><div class="v" id="rDistance"></div></div>
       <div class="row"><div class="k">💶 Prix ferme</div><div class="v" id="rPrix"></div></div>
@@ -441,22 +499,15 @@ input:focus, select:focus{
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC4EfjnLjC3Q3QbqXt_t7LjUd2FFNHSDpQ&libraries=places"></script>
 <script>
 // ---------- DATA ----------
-const chauffeurs = [
-  { nom: "Alex", desc: "Conduite souple – idéal en ville", dispo: true, img: "https://randomuser.me/api/portraits/men/32.jpg" },
-  { nom: "Mehdi", desc: "Confort premium – long trajets", dispo: true, img: "https://randomuser.me/api/portraits/men/45.jpg" },
-  { nom: "Sarah", desc: "Familles & groupes – spacieux", dispo: true, img: "https://randomuser.me/api/portraits/women/65.jpg" }
-];
-
 const vehicules = [
   { nom: "Citadine", coef: 1.0, desc: "Tarif standard (prix de base)", img: "https://img.icons8.com/ios-filled/100/car.png" },
-  { nom: "Berline", coef: 1.1, desc: "Confort premium (majorée +10%)", img: "https://img.icons8.com/ios-filled/100/sedan.png" },
-  { nom: "Van", coef: 1.2, desc: "Groupes / bagages (majorée +20%)", img: "https://img.icons8.com/ios-filled/100/van.png" }
+  { nom: "Berline",  coef: 1.1, desc: "Confort premium (majorée +10%)", img: "https://img.icons8.com/ios-filled/100/sedan.png" },
+  { nom: "Van",      coef: 1.2, desc: "Groupes / bagages (majorée +20%)", img: "https://img.icons8.com/ios-filled/100/van.png" }
 ];
 
 const ALLOWED_DEPTS = ["06","83"];
 
 // ---------- STATE ----------
-let chauffeurSel = null;
 let vehiculeSel = null;
 
 let map = null;
@@ -488,38 +539,6 @@ function setStep(n){
 }
 
 // ---------- BUILD SELECTORS ----------
-function buildChauffeurs(){
-  chauffeurGrid.innerHTML = "";
-  chauffeurs.forEach((c) => {
-    const wrap = document.createElement("div");
-    wrap.className = "select-wrap";
-
-    const img = document.createElement("img");
-    img.src = c.img;
-    img.alt = c.nom;
-    img.className = "select-item" + (c.dispo ? "" : " disabled");
-
-    const label = document.createElement("div");
-    label.className = "mini-label";
-    label.textContent = c.nom;
-
-    img.onclick = () => {
-      if(!c.dispo){
-        openPopup("Indisponible", "Ce chauffeur est actuellement absent.");
-        return;
-      }
-      document.querySelectorAll("#chauffeurGrid .select-item").forEach(e => e.classList.remove("selected"));
-      img.classList.add("selected");
-      chauffeurSel = c;
-      openPopup(c.nom, c.desc);
-    };
-
-    wrap.appendChild(img);
-    wrap.appendChild(label);
-    chauffeurGrid.appendChild(wrap);
-  });
-}
-
 function buildVehicules(){
   vehiculeGrid.innerHTML = "";
   vehicules.forEach((v) => {
@@ -707,7 +726,7 @@ async function estimer(){
   const dt = date.value;
   const hr = heure.value;
 
-  if(!d || !a || !dt || !hr || !chauffeurSel || !vehiculeSel){
+  if(!d || !a || !dt || !hr || !vehiculeSel){
     openPopup("Erreur", "Veuillez remplir tous les champs.");
     return;
   }
@@ -749,7 +768,6 @@ async function estimer(){
       rDepart.textContent = leg.start_address;
       rArrivee.textContent = leg.end_address;
       rDateHeure.textContent = `${dt} • ${hr}`;
-      rChauffeur.textContent = chauffeurSel.nom;
       rVehicule.textContent = vehiculeSel.nom;
       rDistance.textContent = `${km.toFixed(2)} km • ${minutes.toFixed(0)} min`;
       rPrix.textContent = `${prixFerme} €`;
@@ -772,7 +790,8 @@ function retourApresClient(){
   swapSection(clientBox, resultBox, 2);
 }
 
-function payer(){
+/* ✅ Stripe actif : appel Netlify function create-checkout-session */
+async function payer(){
   const n = clientNom.value.trim();
   const p = clientPrenom.value.trim();
   const t = clientTel.value.trim();
@@ -782,20 +801,11 @@ function payer(){
     return;
   }
 
-  async function payer(){
-  const n = clientNom.value.trim();
-  const p = clientPrenom.value.trim();
-  const t = clientTel.value.trim();
-
-  if(!n || !p || !t){
-    openPopup("Erreur", "Merci de remplir Nom, Prénom et Téléphone.");
-    return;
-  }
-
-  // Prix ferme depuis le récap (ex: "42 €")
   const price = Number((rPrix.textContent || "").replace(/[^\d]/g, ""));
-
-  const driverKey = (chauffeurSel?.nom || "").toLowerCase(); // alex / mehdi / sarah
+  if(!price){
+    openPopup("Erreur", "Prix introuvable. Réessaie l’estimation.");
+    return;
+  }
 
   showOverlay(true);
   try{
@@ -807,8 +817,7 @@ function payer(){
       date: date.value,
       time: heure.value,
       vehicle: vehiculeSel?.nom || "Citadine",
-      price,
-      driverKey
+      price
     };
 
     const res = await fetch("/.netlify/functions/create-checkout-session",{
@@ -817,7 +826,7 @@ function payer(){
       body: JSON.stringify(payload)
     });
 
-    const data = await res.json();
+    const data = await res.json().catch(()=> ({}));
 
     if(!res.ok){
       showOverlay(false);
@@ -825,21 +834,16 @@ function payer(){
       return;
     }
 
-    // ✅ Redirection Stripe Checkout
     window.location.href = data.url;
-
   }catch(e){
     showOverlay(false);
     openPopup("Erreur", "Problème réseau. Réessaie.");
   }
 }
 
-}
-
 // ---------- INIT ----------
 function init(){
   setMinDateToday();
-  buildChauffeurs();
   buildVehicules();
   initPlaces();
 
