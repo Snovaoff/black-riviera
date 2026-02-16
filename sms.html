@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SMS</title>
+</head>
+
+<body style="background:black;color:white;font-family:Arial;text-align:center;padding-top:40px">
+
+<h2>Ouverture du SMS...</h2>
+<p>Si rien ne s’ouvre clique sur le bouton</p>
+
+<button onclick="openSMS()" style="padding:15px 25px;font-size:18px;background:gold;border:none;border-radius:10px">
+Ouvrir SMS
+</button>
+
+<script>
+const urlParams = new URLSearchParams(window.location.search);
+const tel = urlParams.get('tel');
+const msg = urlParams.get('msg');
+
+function openSMS(){
+  window.location.href = `sms:${tel}?body=${msg}`;
+}
+
+// ouverture auto
+setTimeout(openSMS,500);
+</script>
+
+</body>
+</html>
