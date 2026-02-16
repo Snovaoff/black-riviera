@@ -98,8 +98,12 @@ je suis dans le regret de vous annoncer que je ne serais pas dans la mesure de p
 Le remboursement se fera sous peu.
 Cordialement.`;
 
-    const acceptUrl = phoneE164 ? smsLink(phoneE164, msgAccept) : "";
-    const declineUrl = phoneE164 ? smsLink(phoneE164, msgDecline) : "";
+const acceptUrl =
+  `https://reservation-black-riviera.netlify.app/sms.html?tel=${encodeURIComponent(phoneE164)}&msg=${encodeURIComponent(msgAccept)}`;
+
+const declineUrl =
+  `https://reservation-black-riviera.netlify.app/sms.html?tel=${encodeURIComponent(phoneE164)}&msg=${encodeURIComponent(msgDecline)}`;
+
     const callUrl = phoneE164 ? telLink(phoneE164) : "";
 
     const html = `
@@ -165,3 +169,4 @@ Cordialement.`;
     return { statusCode: 500, body: JSON.stringify({ error: "Webhook failed", details: String(e?.message || e) }) };
   }
 };
+
