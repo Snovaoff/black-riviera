@@ -146,7 +146,7 @@ input:focus, select:focus{
   padding-right:44px; /* place pour l'icône */
 }
 .date-wrap input[type="date"]::-webkit-calendar-picker-indicator{
-  opacity:0;                 /* on cache l’icône native */
+  opacity:0;
   display:block;
   position:absolute;
   right:12px;
@@ -162,7 +162,7 @@ input:focus, select:focus{
   color:#fff;
   opacity:.9;
   font-size:18px;
-  pointer-events:none; /* le clic passe au champ */
+  pointer-events:none;
 }
 
 /* Buttons */
@@ -307,6 +307,29 @@ input:focus, select:focus{
   font-size:12px;
 }
 
+/* ✅ Encadré statut paiement (seul, discret) */
+.status-box{
+  display:none;
+  margin:10px 0 14px;
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.03);
+  font-size:13px;
+  line-height:1.35;
+}
+.status-box.ok{
+  border-color: rgba(212,175,55,.55);
+  box-shadow: 0 0 0 3px rgba(212,175,55,.12);
+}
+.status-box.bad{
+  border-color: rgba(255,90,90,.55);
+  box-shadow: 0 0 0 3px rgba(255,90,90,.10);
+}
+.status-box .t{ font-weight:800; margin-bottom:4px; color:var(--accent); }
+.status-box.bad .t{ color:#ffb3b3; }
+.status-box .s{ color:var(--text); opacity:.92; }
+
 /* Overlay Loader */
 .overlay{
   display:none;
@@ -402,6 +425,12 @@ input:focus, select:focus{
     <div class="step" id="step3"><span class="dot"></span>Infos</div>
   </div>
 
+  <!-- ✅ Encadré message retour paiement -->
+  <div id="paymentStatus" class="status-box">
+    <div class="t" id="paymentTitle"></div>
+    <div class="s" id="paymentSub"></div>
+  </div>
+
   <!-- ÉTAPE 1 : RÉSERVATION -->
   <div id="reservationBox" class="section">
     <h2>Réservation</h2>
@@ -419,11 +448,11 @@ input:focus, select:focus{
 
     <div class="field">
       <label>Date</label>
-      <!-- ✅ wrapper + icône blanche -->
       <div class="date-wrap">
         <input type="date" id="date" />
         <span class="date-ico" aria-hidden="true">📅</span>
       </div>
+      <div class="helper">Réservation minimum <b>2h à l’avance</b>.</div>
     </div>
 
     <div class="field">
@@ -506,6 +535,7 @@ const vehicules = [
 ];
 
 const ALLOWED_DEPTS = ["06","83"];
+const MIN_ADVANCE_MINUTES = 120; // ✅ 2h minimum
 
 // ---------- STATE ----------
 let vehiculeSel = null;
@@ -536,6 +566,18 @@ function setStep(n){
   step1.classList.toggle("active", n===1);
   step2.classList.toggle("active", n===2);
   step3.classList.toggle("active", n===3);
+}
+
+// ---------- PAYMENT STATUS BOX ----------
+function showPaymentStatus(type, title, sub){
+  paymentStatus.classList.remove("ok","bad");
+  paymentStatus.classList.add(type === "ok" ? "ok" : "bad");
+  paymentTitle.textContent = title;
+  paymentSub.textContent = sub;
+  paymentStatus.style.display = "block";
+}
+function hidePaymentStatus(){
+  paymentStatus.style.display = "none";
 }
 
 // ---------- BUILD SELECTORS ----------
@@ -576,6 +618,8 @@ function setMinDateToday(){
   date.min = `${yyyy}-${mm}-${dd}`;
 }
 
+function addMinutes(d, mins){ return new Date(d.getTime() + mins*60000); }
+
 function generateSlotsForSelectedDate(){
   const selDate = date.value;
   heure.innerHTML = "";
@@ -585,10 +629,12 @@ function generateSlotsForSelectedDate(){
 
   if(selDate){
     const todayStr = now.toISOString().slice(0,10);
+
+    // ✅ si aujourd'hui -> min = maintenant + 2h, arrondi au slot 30 minutes
     if(selDate === todayStr){
-      const curMin = now.getHours()*60 + now.getMinutes();
-      minMinutes = Math.ceil(curMin / 30) * 30;
-      if(minMinutes >= 24*60) minMinutes = 24*60;
+      const minDT = addMinutes(now, MIN_ADVANCE_MINUTES);
+      const mins = minDT.getHours()*60 + minDT.getMinutes();
+      minMinutes = Math.ceil(mins / 30) * 30;
     }
   }
 
@@ -601,6 +647,24 @@ function generateSlotsForSelectedDate(){
     opt.textContent = opt.value;
     heure.appendChild(opt);
   }
+
+  if(!heure.options.length && selDate){
+    openPopup("Indisponible", "Aucun créneau disponible aujourd’hui (réservation minimum 2h à l’avance). Choisissez une autre date.");
+  }
+}
+
+function parseSelectedDateTime(){
+  if(!date.value || !heure.value) return null;
+  const [yyyy, m, dd] = date.value.split("-").map(Number);
+  const [hh, mi] = heure.value.split(":").map(Number);
+  return new Date(yyyy, m-1, dd, hh, mi, 0, 0);
+}
+
+function isAdvanceOk(){
+  const dt = parseSelectedDateTime();
+  if(!dt) return false;
+  const min = addMinutes(new Date(), MIN_ADVANCE_MINUTES);
+  return dt.getTime() >= min.getTime();
 }
 
 function isNightBySelectedHour(){
@@ -719,8 +783,70 @@ function swapSection(hideEl, showEl, step){
   }, 170);
 }
 
+// ---------- SAVE/RESTORE RECAP FOR STRIPE RETURN ----------
+function saveRecapToLocal(){
+  localStorage.setItem("vtc_last_recap", JSON.stringify({
+    depart: rDepart.textContent,
+    arrivee: rArrivee.textContent,
+    dateHeure: rDateHeure.textContent,
+    vehicule: rVehicule.textContent,
+    distance: rDistance.textContent,
+    prix: rPrix.textContent,
+    isNight: (badgeNuit.style.display === "block")
+  }));
+}
+function restoreRecapFromLocal(){
+  const saved = localStorage.getItem("vtc_last_recap");
+  if(!saved) return false;
+  try{
+    const r = JSON.parse(saved);
+    rDepart.textContent = r.depart || "";
+    rArrivee.textContent = r.arrivee || "";
+    rDateHeure.textContent = r.dateHeure || "";
+    rVehicule.textContent = r.vehicule || "";
+    rDistance.textContent = r.distance || "";
+    rPrix.textContent = r.prix || "";
+    badgeNuit.style.display = r.isNight ? "block" : "none";
+    return true;
+  }catch(e){
+    return false;
+  }
+}
+
+// ---------- HANDLE STRIPE RETURN ----------
+function handleStripeReturn(){
+  const params = new URLSearchParams(window.location.search);
+
+  if(params.get("paid") === "1"){
+    showPaymentStatus(
+      "ok",
+      "Paiement accepté ✅",
+      "Vous recevrez bientôt une confirmation de votre chauffeur par SMS."
+    );
+
+    // remet le récap visible après retour
+    const ok = restoreRecapFromLocal();
+    if(ok){
+      reservationBox.classList.add("hidden");
+      clientBox.classList.add("hidden");
+      resultBox.classList.remove("hidden");
+      setStep(2);
+    }
+  }
+
+  if(params.get("canceled") === "1"){
+    showPaymentStatus(
+      "bad",
+      "Paiement refusé / annulé",
+      "Veuillez réessayer."
+    );
+  }
+}
+
 // ---------- FLOW ----------
 async function estimer(){
+  hidePaymentStatus();
+
   const d = depart.value.trim();
   const a = arrivee.value.trim();
   const dt = date.value;
@@ -728,6 +854,12 @@ async function estimer(){
 
   if(!d || !a || !dt || !hr || !vehiculeSel){
     openPopup("Erreur", "Veuillez remplir tous les champs.");
+    return;
+  }
+
+  // ✅ 2h minimum
+  if(!isAdvanceOk()){
+    openPopup("Réservation trop proche", "Merci de réserver au minimum 2 heures à l’avance.");
     return;
   }
 
@@ -790,7 +922,7 @@ function retourApresClient(){
   swapSection(clientBox, resultBox, 2);
 }
 
-/* ✅ Stripe actif : appel Netlify function create-checkout-session */
+/* ✅ Stripe actif */
 async function payer(){
   const n = clientNom.value.trim();
   const p = clientPrenom.value.trim();
@@ -806,6 +938,9 @@ async function payer(){
     openPopup("Erreur", "Prix introuvable. Réessaie l’estimation.");
     return;
   }
+
+  // ✅ sauvegarde récap pour le retour /?paid=1
+  saveRecapToLocal();
 
   showOverlay(true);
   try{
@@ -849,9 +984,13 @@ function init(){
 
   generateSlotsForSelectedDate();
   date.addEventListener("change", generateSlotsForSelectedDate);
+
+  handleStripeReturn();
 }
 
 window.onload = init;
 </script>
 </body>
 </html>
+
+
