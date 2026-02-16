@@ -138,6 +138,16 @@ input:focus, select:focus{
   line-height:1.3;
 }
 
+/* ✅ Icône calendrier visible (Chrome/Edge PC) */
+input[type="date"]{
+  color-scheme: dark;
+}
+input[type="date"]::-webkit-calendar-picker-indicator{
+  filter: invert(1) brightness(1.2);
+  opacity: 1;
+  cursor: pointer;
+}
+
 /* Buttons */
 .btn{
   width:100%;
@@ -273,7 +283,7 @@ input:focus, select:focus{
   font-size:12px;
 }
 
-/* ✅ Encadré statut paiement (discret) */
+/* ✅ Encadré statut paiement */
 .status-box{
   display:none;
   margin:10px 0 14px;
@@ -391,7 +401,7 @@ input:focus, select:focus{
     <div class="step" id="step3"><span class="dot"></span>Infos</div>
   </div>
 
-  <!-- ✅ Encadré paiement retour Stripe -->
+  <!-- Encadré paiement retour Stripe -->
   <div id="paymentStatus" class="status-box">
     <div class="t" id="paymentTitle"></div>
     <div class="s" id="paymentSub"></div>
@@ -447,9 +457,13 @@ input:focus, select:focus{
 
       <div class="hint">Paiement requis avant l’envoi de la course au chauffeur.</div>
 
-      <!-- ids pour cacher après paiement -->
       <button id="btnModifier" class="btn btn-secondary" onclick="retour()">Modifier</button>
       <button id="btnValider" class="btn btn-primary" style="margin-top:10px" onclick="valider()">Valider la course</button>
+
+      <!-- ✅ Bouton Quitter : uniquement après paiement accepté -->
+      <button id="btnQuitter" class="btn btn-secondary" style="margin-top:10px; display:none;" onclick="quitterApresPaiement()">
+        Quitter
+      </button>
     </div>
   </div>
 
@@ -742,7 +756,9 @@ function saveRecapToLocal(){
     vehicule: rVehicule.textContent,
     distance: rDistance.textContent,
     prix: rPrix.textContent,
-    isNight: (badgeNuit.style.display === "block")
+    isNight: (badgeNuit.style.display === "block"),
+    pickupInput: (depart.value || ""),
+    dropoffInput: (arrivee.value || "")
   }));
 }
 function restoreRecapFromLocal(){
@@ -763,6 +779,32 @@ function restoreRecapFromLocal(){
   }
 }
 
+/* ✅ Restore MAP after payment */
+function restoreMapFromLocal(){
+  const saved = localStorage.getItem("vtc_last_recap");
+  if(!saved) return;
+
+  let r;
+  try{ r = JSON.parse(saved); } catch(e){ return; }
+
+  const origin = (r.pickupInput || "").trim();
+  const destination = (r.dropoffInput || "").trim();
+  if(!origin || !destination) return;
+
+  setTimeout(() => {
+    initMap();
+    directionsService.route({
+      origin,
+      destination,
+      travelMode: google.maps.TravelMode.DRIVING
+    }, (res, status) => {
+      if(status === "OK"){
+        directionsRenderer.setDirections(res);
+      }
+    });
+  }, 150);
+}
+
 // ---------- Stripe return handling ----------
 function handleStripeReturn(){
   const params = new URLSearchParams(window.location.search);
@@ -776,19 +818,80 @@ function handleStripeReturn(){
       clientBox.classList.add("hidden");
       resultBox.classList.remove("hidden");
       setStep(2);
+
+      // ✅ Map visible dans le récap après paiement
+      restoreMapFromLocal();
     }
 
     // ✅ cacher Modifier + Valider seulement si paiement accepté
     const bm = document.getElementById("btnModifier");
     const bv = document.getElementById("btnValider");
+    const bq = document.getElementById("btnQuitter");
     if(bm) bm.style.display = "none";
     if(bv) bv.style.display = "none";
+    if(bq) bq.style.display = "block";
   }
 
   if(params.get("canceled") === "1"){
     showPaymentStatus("bad","Paiement refusé / annulé","Veuillez réessayer.");
   }
 }
+
+/* ✅ Quitter après paiement : retour réservation */
+function quitterApresPaiement(){
+  // 1) cache le message de paiement
+  hidePaymentStatus();
+
+  // 2) Ré-affiche les boutons normaux / cache Quitter
+  const bm = document.getElementById("btnModifier");
+  const bv = document.getElementById("btnValider");
+  const bq = document.getElementById("btnQuitter");
+  if(bm) bm.style.display = "";
+  if(bv) bv.style.display = "";
+  if(bq) bq.style.display = "none";
+
+  // 3) Reset champs réservation
+  depart.value = "";
+  arrivee.value = "";
+  date.value = "";
+  heure.innerHTML = "";
+  generateSlotsForSelectedDate(); // régénère les slots si date vide
+
+  // Reset sélection véhicule
+  vehiculeSel = null;
+  document.querySelectorAll("#vehiculeGrid .select-item").forEach(e => e.classList.remove("selected"));
+
+  // 4) Reset formulaire client
+  clientNom.value = "";
+  clientPrenom.value = "";
+  clientTel.value = "";
+
+  // 5) Reset récap
+  rDepart.textContent = "";
+  rArrivee.textContent = "";
+  rDateHeure.textContent = "";
+  rVehicule.textContent = "";
+  rDistance.textContent = "";
+  rPrix.textContent = "";
+  badgeNuit.style.display = "none";
+
+  // 6) Reset map
+  document.getElementById("map").innerHTML = "";
+
+  // 7) Nettoie l’URL (enlève paid/canceled) + localStorage
+  const url = new URL(window.location.href);
+  url.searchParams.delete("paid");
+  url.searchParams.delete("canceled");
+  window.history.replaceState({}, "", url.toString());
+  localStorage.removeItem("vtc_last_recap");
+
+  // 8) Retour propre à l’étape 1
+  resultBox.classList.add("hidden");
+  clientBox.classList.add("hidden");
+  reservationBox.classList.remove("hidden");
+  setStep(1);
+}
+
 
 // ---------- FLOW ----------
 async function estimer(){
@@ -932,6 +1035,8 @@ window.onload = init;
 </script>
 </body>
 </html>
+
+
 
 
 
