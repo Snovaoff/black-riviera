@@ -6,312 +6,369 @@
 <title>Module VTC</title>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap');
+
 :root{
---bg:#f2f2f2;
---card:#ffffff;
---text:#111;
---muted:#666;
---border:#e6e6e6;
---primary:#007BFF;
---primaryHover:#0056b3;
---secondary:#6c757d;
---secondaryHover:#565e64;
---shadow:0 10px 25px rgba(0,0,0,.10);
---ring:0 0 0 4px rgba(0,123,255,.15);
+  --bg:#0b0b0d;
+  --card:#111114;
+  --text:#f5f5f5;
+  --muted:#8c8c8c;
+  --border:#1c1c22;
+
+  --primary:#d4af37;
+  --primaryHover:#b9922e;
+  --accent:#f5d27a;
+
+  --shadow:0 20px 50px rgba(0,0,0,.6);
+  --ring:0 0 0 4px rgba(212,175,55,.25);
 }
 
 *{ box-sizing:border-box; }
 body{
-margin:0;
-font-family: Arial, sans-serif;
-background:var(--bg);
-display:flex;
-justify-content:center;
-padding:18px;
-color:var(--text);
+  margin:0;
+  font-family: Arial, sans-serif;
+  background: radial-gradient(circle at top, #111114 0%, #0b0b0d 60%);
+  display:flex;
+  justify-content:center;
+  padding:18px;
+  color:var(--text);
 }
 
 .main-box{
-background:var(--card);
-width:min(460px, 100%);
-padding:18px;
-border-radius:16px;
-box-shadow:var(--shadow);
-position:relative;
-overflow:hidden;
+  background: linear-gradient(145deg,#141417,#0e0e11);
+  width:min(460px, 100%);
+  padding:18px;
+  border-radius:16px;
+  box-shadow:var(--shadow);
+  position:relative;
+  overflow:hidden;
+  border:1px solid var(--border);
 }
 
+/* Titres premium + ligne dorée */
 h2,h3{
-text-align:center;
-margin:10px 0;
-letter-spacing:-0.2px;
+  text-align:center;
+  margin:16px 0 10px;
+  letter-spacing:1px;
+  font-family:'Playfair Display', serif;
+  color:var(--primary);
+  position:relative;
 }
+h2::after, h3::after{
+  content:"";
+  display:block;
+  height:1px;
+  width:70%;
+  margin:10px auto 0;
+  background: linear-gradient(90deg, transparent, rgba(212,175,55,.9), transparent);
+}
+h3{ margin-top:22px; }
+h3::after{ width:55%; margin-top:8px; }
 
 /* Stepper */
 .stepper{
-display:flex;
-gap:8px;
-margin:6px 0 14px;
-justify-content:center;
-align-items:center;
+  display:flex;
+  gap:8px;
+  margin:6px 0 18px;
+  justify-content:center;
+  align-items:center;
 }
 .step{
-display:flex;
-align-items:center;
-gap:8px;
-padding:8px 10px;
-border:1px solid var(--border);
-border-radius:999px;
-font-size:12px;
-color:var(--muted);
-background:#fafafa;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 10px;
+  border:1px solid var(--border);
+  border-radius:999px;
+  font-size:12px;
+  color:var(--muted);
+  background:rgba(255,255,255,.03);
 }
 .step .dot{
-width:8px;height:8px;border-radius:50%;
-background:#cfcfcf;
+  width:8px;height:8px;border-radius:50%;
+  background:#3a3a44;
 }
 .step.active{
-color:#0b2b55;
-border-color:rgba(0,123,255,.35);
-background:rgba(0,123,255,.06);
+  color:var(--accent);
+  border-color:rgba(212,175,55,.45);
+  background:rgba(212,175,55,.08);
 }
 .step.active .dot{ background:var(--primary); }
 
 /* Sections & transitions */
 .section{
-opacity:1;
-transform:translateY(0);
-transition:opacity .25s ease, transform .25s ease;
+  opacity:1;
+  transform:translateY(0);
+  transition:opacity .25s ease, transform .25s ease;
 }
-.hidden{
-display:none;
-}
+.hidden{ display:none; }
 .fade-out{
-opacity:0;
-transform:translateY(6px);
-pointer-events:none;
+  opacity:0;
+  transform:translateY(6px);
+  pointer-events:none;
 }
 
 .field{ margin-bottom:12px; }
 label{
-font-weight:700;
-display:block;
-margin-bottom:6px;
-font-size:13px;
+  font-weight:700;
+  display:block;
+  margin-bottom:6px;
+  font-size:13px;
+  color:var(--text);
 }
 input, select{
-width:100%;
-padding:10px;
-border-radius:10px;
-border:1px solid #d9d9d9;
-outline:none;
-transition:border .2s ease, box-shadow .2s ease;
-background:#fff;
+  width:100%;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  outline:none;
+  transition:border .2s ease, box-shadow .2s ease;
+  background:#0f0f13;
+  color:var(--text);
 }
+input::placeholder{ color:#6d6d78; }
 input:focus, select:focus{
-border-color:rgba(0,123,255,.55);
-box-shadow:var(--ring);
+  border-color:rgba(212,175,55,.6);
+  box-shadow:var(--ring);
 }
 .helper{
-font-size:12px;
-color:var(--muted);
-margin-top:6px;
-line-height:1.3;
+  font-size:12px;
+  color:var(--muted);
+  margin-top:6px;
+  line-height:1.3;
 }
 
 /* Buttons */
 .btn{
-width:100%;
-padding:12px 12px;
-border:none;
-border-radius:12px;
-font-size:15px;
-cursor:pointer;
-transition:transform .12s ease, background .2s ease, opacity .2s ease;
-display:flex;
-justify-content:center;
-align-items:center;
-gap:8px;
-user-select:none;
+  width:100%;
+  padding:12px 12px;
+  border:none;
+  border-radius:12px;
+  font-size:15px;
+  cursor:pointer;
+  transition:transform .12s ease, background .2s ease, opacity .2s ease;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
+  user-select:none;
 }
 .btn:active{ transform:scale(.985); }
-.btn-primary{ background:var(--primary); color:#fff; }
-.btn-primary:hover{ background:var(--primaryHover); }
-.btn-secondary{ background:var(--secondary); color:#fff; }
-.btn-secondary:hover{ background:var(--secondaryHover); }
-.btn:disabled{
-opacity:.55;
-cursor:not-allowed;
-transform:none;
+.btn-primary{
+  background: linear-gradient(135deg,var(--primary),var(--accent));
+  color:#000;
+  font-weight:800;
 }
+.btn-primary:hover{
+  background: linear-gradient(135deg,var(--accent),var(--primary));
+}
+.btn-secondary{
+  background:#1a1a20;
+  color:var(--text);
+  border:1px solid var(--border);
+}
+.btn-secondary:hover{ background:#22222a; }
+.btn:disabled{ opacity:.55; cursor:not-allowed; transform:none; }
 
 /* Selectors */
 .select-grid{
-display:flex;
-justify-content:space-around;
-gap:10px;
-margin:10px 0 6px;
+  display:flex;
+  justify-content:space-around;
+  gap:12px;
+  margin:14px 0 6px;
 }
 .select-wrap{
-display:flex;
-flex-direction:column;
-align-items:center;
-gap:6px;
-width:33%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:7px;
+  width:33%;
 }
 .select-item{
-width:64px;
-height:64px;
-border-radius:50%;
-border:3px solid transparent;
-cursor:pointer;
-transition:.2s;
-object-fit:cover;
-background:#fff;
-box-shadow:0 6px 14px rgba(0,0,0,.06);
+  width:64px;
+  height:64px;
+  border-radius:50%;
+  border:3px solid transparent;
+  cursor:pointer;
+  transition:.2s;
+  object-fit:cover;
+  background:#0f0f13;
+  box-shadow:0 10px 22px rgba(0,0,0,.35);
 }
 .select-item:hover{ transform:translateY(-1px); }
 .select-item.selected{
-border-color:var(--primary);
-box-shadow:0 0 0 4px rgba(0,123,255,.18), 0 10px 18px rgba(0,0,0,.08);
+  border-color:var(--primary);
+  box-shadow:0 0 20px rgba(212,175,55,.35), 0 14px 28px rgba(0,0,0,.35);
 }
 .mini-label{
-font-size:12px;
-color:var(--muted);
-text-align:center;
+  font-size:12px;
+  color:var(--muted);
+  text-align:center;
 }
+
+/* Véhicules : icônes blanches sans rond */
+#vehiculeGrid .select-item{
+  width:56px; height:56px;
+  border:none !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  filter: invert(1);
+  transition: transform .2s ease, filter .2s ease;
+}
+#vehiculeGrid .select-item:hover{ transform: translateY(-1px); }
+#vehiculeGrid .select-item.selected{
+  transform: scale(1.15);
+  filter: invert(1) drop-shadow(0 0 8px rgba(212,175,55,.85));
+}
+
+/* Espace avant bouton Estimer */
+#vehiculeGrid{ margin-bottom:14px; }
+#reservationBox .btn-primary{ margin-top:16px; }
 
 /* Map & recap */
 #map{
-height:260px;
-border-radius:14px;
-margin-top:10px;
-border:1px solid var(--border);
+  height:260px;
+  border-radius:14px;
+  margin-top:10px;
+  border:1px solid var(--border);
 }
 
 .recap{
-background:#fbfbfb;
-padding:14px;
-border-radius:14px;
-border:1px solid var(--border);
-margin-top:12px;
+  background:#0f0f13;
+  padding:14px;
+  border-radius:14px;
+  border:1px solid var(--border);
+  margin-top:12px;
 }
 .recap h3{ margin:6px 0 10px; }
 .row{
-display:flex;
-justify-content:space-between;
-gap:10px;
-padding:8px 0;
-border-bottom:1px dashed #e3e3e3;
-font-size:13px;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:8px 0;
+  border-bottom:1px solid #1c1c22;
+  font-size:13px;
 }
 .row:last-child{ border-bottom:none; }
 .k{ color:var(--muted); min-width:120px; }
-.v{ font-weight:700; text-align:right; flex:1; }
+.v{ font-weight:800; text-align:right; flex:1; }
 .hint{
-font-size:12px;
-color:var(--muted);
-margin-top:10px;
-line-height:1.35;
+  font-size:12px;
+  color:var(--muted);
+  margin-top:10px;
+  line-height:1.35;
 }
 
 /* Night badge */
 #badgeNuit{
-display:none;
-margin-top:10px;
-padding:6px 10px;
-border-radius:999px;
-background:#1c1c3c;
-color:#fff;
-width:fit-content;
-font-size:12px;
+  display:none;
+  margin-top:10px;
+  padding:6px 10px;
+  border-radius:999px;
+  background: linear-gradient(135deg,#1c1c30,#0e0e18);
+  border:1px solid var(--primary);
+  color:var(--accent);
+  width:fit-content;
+  font-size:12px;
 }
 
-/* ✅ Encadré statut paiement */
+/* ✅ Encadré statut paiement (discret) */
 .status-box{
-display:none;
-margin:10px 0 14px;
-padding:10px 12px;
-border-radius:12px;
-border:1px solid var(--border);
-background:#fafafa;
-font-size:13px;
-line-height:1.35;
+  display:none;
+  margin:10px 0 14px;
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.03);
+  font-size:13px;
+  line-height:1.35;
 }
 .status-box.ok{
-border-color: rgba(0,123,255,.45);
-box-shadow: 0 0 0 3px rgba(0,123,255,.10);
+  border-color: rgba(212,175,55,.55);
+  box-shadow: 0 0 0 3px rgba(212,175,55,.12);
 }
 .status-box.bad{
-border-color: rgba(255,90,90,.55);
-box-shadow: 0 0 0 3px rgba(255,90,90,.10);
+  border-color: rgba(255,90,90,.55);
+  box-shadow: 0 0 0 3px rgba(255,90,90,.10);
 }
-.status-box .t{ font-weight:800; margin-bottom:4px; }
-.status-box.ok .t{ color:#0b2b55; }
-.status-box.bad .t{ color:#8b1d1d; }
-.status-box .s{ color:#333; }
+.status-box .t{ font-weight:800; margin-bottom:4px; color:var(--accent); }
+.status-box.bad .t{ color:#ffb3b3; }
+.status-box .s{ color:var(--text); opacity:.92; }
 
 /* Overlay Loader */
 .overlay{
-display:none;
-position:absolute;
-inset:0;
-background:rgba(255,255,255,.72);
-z-index:50;
-backdrop-filter: blur(2px);
+  display:none;
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  z-index:50;
+  backdrop-filter: blur(2px);
 }
 .overlay .box{
-position:absolute;
-top:50%; left:50%;
-transform:translate(-50%,-50%);
-background:#fff;
-border:1px solid var(--border);
-box-shadow:0 12px 30px rgba(0,0,0,.12);
-border-radius:16px;
-padding:16px 18px;
-width:min(300px, 86%);
-text-align:center;
+  position:absolute;
+  top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  background:#0f0f13;
+  border:1px solid var(--border);
+  box-shadow:0 12px 30px rgba(0,0,0,.6);
+  border-radius:16px;
+  padding:16px 18px;
+  width:min(300px, 86%);
+  text-align:center;
 }
 .spinner{
-width:28px;height:28px;
-border:4px solid #d9d9d9;
-border-top:4px solid var(--primary);
-border-radius:50%;
-animation:spin 1s linear infinite;
-margin:0 auto 10px;
+  width:28px;height:28px;
+  border:4px solid #2a2a33;
+  border-top:4px solid var(--primary);
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+  margin:0 auto 10px;
 }
 @keyframes spin{ to{ transform:rotate(360deg); } }
 .overlay .msg{ font-size:13px; color:var(--muted); }
 
 /* Popup */
 .popup-overlay{
-display:none;
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.45);
-z-index:999;
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.65);
+  z-index:999;
 }
 .popup{
-display:none;
-position:fixed;
-top:50%; left:50%;
-transform:translate(-50%,-50%);
-background:#fff;
-padding:18px;
-border-radius:16px;
-box-shadow:0 18px 40px rgba(0,0,0,.25);
-z-index:1000;
-width:min(320px, 88%);
-text-align:left;
+  display:none;
+  position:fixed;
+  top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  background:#0f0f13;
+  padding:18px;
+  border-radius:16px;
+  box-shadow:0 18px 40px rgba(0,0,0,.7);
+  z-index:1000;
+  width:min(320px, 88%);
+  text-align:left;
+  border:1px solid var(--border);
 }
-.popup h3{ margin:0 0 8px; text-align:left; }
-.popup p{ margin:0; color:#333; font-size:14px; line-height:1.35; white-space:pre-line; }
+.popup h3{
+  margin:0 0 8px;
+  text-align:left;
+  font-family:'Playfair Display', serif;
+  color:var(--primary);
+  letter-spacing:.6px;
+}
+.popup p{
+  margin:0;
+  color:var(--text);
+  font-size:14px;
+  line-height:1.35;
+  white-space:pre-line;
+}
 .popup .btn{ margin-top:12px; }
 
 /* Responsive tweaks */
 @media (max-width:380px){
-.select-item{ width:58px; height:58px; }
-.k{ min-width:105px; }
+  .k{ min-width:105px; }
 }
 </style>
 </head>
@@ -319,132 +376,128 @@ text-align:left;
 <body>
 <div class="main-box">
 
-<!-- Overlay loader -->
-<div class="overlay" id="overlay">
-<div class="box">
-<div class="spinner"></div>
-<div class="msg">Calcul en cours…</div>
-</div>
-</div>
+  <!-- Overlay loader -->
+  <div class="overlay" id="overlay">
+    <div class="box">
+      <div class="spinner"></div>
+      <div class="msg">Calcul en cours…</div>
+    </div>
+  </div>
 
-<!-- Stepper -->
-<div class="stepper">
-<div class="step active" id="step1"><span class="dot"></span>Réservation</div>
-<div class="step" id="step2"><span class="dot"></span>Récap</div>
-<div class="step" id="step3"><span class="dot"></span>Infos</div>
-</div>
+  <!-- Stepper -->
+  <div class="stepper">
+    <div class="step active" id="step1"><span class="dot"></span>Réservation</div>
+    <div class="step" id="step2"><span class="dot"></span>Récap</div>
+    <div class="step" id="step3"><span class="dot"></span>Infos</div>
+  </div>
 
-<!-- ✅ Encadré retour paiement (discret) -->
-<div id="paymentStatus" class="status-box">
-  <div class="t" id="paymentTitle"></div>
-  <div class="s" id="paymentSub"></div>
-</div>
+  <!-- ✅ Encadré paiement retour Stripe -->
+  <div id="paymentStatus" class="status-box">
+    <div class="t" id="paymentTitle"></div>
+    <div class="s" id="paymentSub"></div>
+  </div>
 
-<!-- ÉTAPE 1 : RÉSERVATION -->
-<div id="reservationBox" class="section">
-<h2>Réservation</h2>
+  <!-- STEP 1 -->
+  <div id="reservationBox" class="section">
+    <h2>Réservation</h2>
 
-<div class="field">
-<label>Adresse de départ</label>
-<input id="depart" placeholder="Ex : Nice, Cannes..." />
-</div>
+    <div class="field">
+      <label>Adresse de départ</label>
+      <input id="depart" placeholder="Ex : Nice, Cannes..." />
+    </div>
 
-<div class="field">
-<label>Adresse d’arrivée</label>
-<input id="arrivee" placeholder="Ex : Antibes, Toulon..." />
-<div class="helper">Zones disponibles : <b>06</b> et <b>83</b> (pour le moment).</div>
-</div>
+    <div class="field">
+      <label>Adresse d’arrivée</label>
+      <input id="arrivee" placeholder="Ex : Antibes, Toulon..." />
+      <div class="helper">Zones disponibles : <b>06</b> et <b>83</b> (pour le moment).</div>
+    </div>
 
-<div class="field">
-<label>Date</label>
-<input type="date" id="date" />
-<div class="helper">Réservation minimum <b>2h à l’avance</b>.</div>
-</div>
+    <div class="field">
+      <label>Date</label>
+      <input type="date" id="date" />
+      <div class="helper">Réservation minimum <b>2h à l’avance</b>.</div>
+    </div>
 
-<div class="field">
-<label>Heure</label>
-<select id="heure"></select>
-</div>
+    <div class="field">
+      <label>Heure</label>
+      <select id="heure"></select>
+    </div>
 
-<h3>Véhicule</h3>
-<div class="select-grid" id="vehiculeGrid"></div>
+    <h3>Véhicule</h3>
+    <div class="select-grid" id="vehiculeGrid"></div>
 
-<button class="btn btn-primary" onclick="estimer()">
-Estimer le prix
-</button>
-</div>
+    <button class="btn btn-primary" onclick="estimer()">Estimer le prix</button>
+  </div>
 
-<!-- ÉTAPE 2 : MAP + RÉCAP -->
-<div id="resultBox" class="section hidden">
-<div id="map"></div>
+  <!-- STEP 2 -->
+  <div id="resultBox" class="section hidden">
+    <div id="map"></div>
 
-<div class="recap">
-<h3>Récapitulatif</h3>
+    <div class="recap">
+      <h3>Récapitulatif</h3>
 
-<div class="row"><div class="k">📍 Départ</div><div class="v" id="rDepart"></div></div>
-<div class="row"><div class="k">🏁 Arrivée</div><div class="v" id="rArrivee"></div></div>
-<div class="row"><div class="k">🕒 Date/Heure</div><div class="v" id="rDateHeure"></div></div>
-<div class="row"><div class="k">🚘 Véhicule</div><div class="v" id="rVehicule"></div></div>
-<div class="row"><div class="k">🛣️ Trajet</div><div class="v" id="rDistance"></div></div>
-<div class="row"><div class="k">💶 Prix ferme</div><div class="v" id="rPrix"></div></div>
+      <div class="row"><div class="k">📍 Départ</div><div class="v" id="rDepart"></div></div>
+      <div class="row"><div class="k">🏁 Arrivée</div><div class="v" id="rArrivee"></div></div>
+      <div class="row"><div class="k">🕒 Date/Heure</div><div class="v" id="rDateHeure"></div></div>
+      <div class="row"><div class="k">🚘 Véhicule</div><div class="v" id="rVehicule"></div></div>
+      <div class="row"><div class="k">🛣️ Trajet</div><div class="v" id="rDistance"></div></div>
+      <div class="row"><div class="k">💶 Prix ferme</div><div class="v" id="rPrix"></div></div>
 
-<div id="badgeNuit">🌙 Course de nuit</div>
+      <div id="badgeNuit">🌙 Course de nuit</div>
 
-<div class="hint">
-Paiement requis avant l’envoi de la course au chauffeur (évite les demandes non sérieuses).
-</div>
+      <div class="hint">Paiement requis avant l’envoi de la course au chauffeur.</div>
 
-<!-- ✅ ids ajoutés pour cacher après paiement -->
-<button id="btnModifier" class="btn btn-secondary" onclick="retour()">Modifier</button>
-<button id="btnValider" class="btn btn-primary" style="margin-top:10px" onclick="valider()">Valider la course</button>
-</div>
-</div>
+      <!-- ids pour cacher après paiement -->
+      <button id="btnModifier" class="btn btn-secondary" onclick="retour()">Modifier</button>
+      <button id="btnValider" class="btn btn-primary" style="margin-top:10px" onclick="valider()">Valider la course</button>
+    </div>
+  </div>
 
-<!-- ÉTAPE 3 : FORMULAIRE CLIENT -->
-<div id="clientBox" class="section hidden">
-<h2>Vos informations</h2>
+  <!-- STEP 3 -->
+  <div id="clientBox" class="section hidden">
+    <h2>Vos informations</h2>
 
-<div class="field">
-<label>Nom</label>
-<input id="clientNom" />
-</div>
+    <div class="field">
+      <label>Nom</label>
+      <input id="clientNom" />
+    </div>
 
-<div class="field">
-<label>Prénom</label>
-<input id="clientPrenom" />
-</div>
+    <div class="field">
+      <label>Prénom</label>
+      <input id="clientPrenom" />
+    </div>
 
-<div class="field">
-<label>Téléphone</label>
-<input id="clientTel" inputmode="tel" placeholder="06..." />
-<div class="helper">Ex : 06 12 34 56 78</div>
-</div>
+    <div class="field">
+      <label>Téléphone</label>
+      <input id="clientTel" inputmode="tel" placeholder="06..." />
+      <div class="helper">Ex : 06 12 34 56 78</div>
+    </div>
 
-<button class="btn btn-primary" onclick="payer()">Procéder au paiement</button>
-<button class="btn btn-secondary" style="margin-top:10px" onclick="retourApresClient()">Retour</button>
-</div>
+    <button class="btn btn-primary" onclick="payer()">Procéder au paiement</button>
+    <button class="btn btn-secondary" style="margin-top:10px" onclick="retourApresClient()">Retour</button>
+  </div>
 
 </div>
 
 <!-- POPUP -->
 <div class="popup-overlay" id="popupOverlay" onclick="closePopup()"></div>
 <div class="popup" id="popup">
-<h3 id="popupTitle"></h3>
-<p id="popupText"></p>
-<button class="btn btn-primary" onclick="closePopup()">Fermer</button>
+  <h3 id="popupTitle"></h3>
+  <p id="popupText"></p>
+  <button class="btn btn-primary" onclick="closePopup()">Fermer</button>
 </div>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC4EfjnLjC3Q3QbqXt_t7LjUd2FFNHSDpQ&libraries=places"></script>
 <script>
 // ---------- DATA ----------
 const vehicules = [
-{ nom: "Citadine", coef: 1.0, desc: "Tarif standard (prix de base)", img: "https://img.icons8.com/ios-filled/100/car.png" },
-{ nom: "Berline", coef: 1.1, desc: "Confort premium (majorée +10%)", img: "https://img.icons8.com/ios-filled/100/sedan.png" },
-{ nom: "Van", coef: 1.2, desc: "Groupes / bagages (majorée +20%)", img: "https://img.icons8.com/ios-filled/100/van.png" }
+  { nom: "Citadine", coef: 1.0, desc: "Tarif standard (prix de base)", img: "https://img.icons8.com/ios-filled/100/car.png" },
+  { nom: "Berline",  coef: 1.1, desc: "Confort premium (majorée +10%)", img: "https://img.icons8.com/ios-filled/100/sedan.png" },
+  { nom: "Van",      coef: 1.2, desc: "Groupes / bagages (majorée +20%)", img: "https://img.icons8.com/ios-filled/100/van.png" }
 ];
 
 const ALLOWED_DEPTS = ["06","83"];
-const MIN_ADVANCE_MINUTES = 120; // ✅ 2 heures
+const MIN_ADVANCE_MINUTES = 120;
 
 // ---------- STATE ----------
 let vehiculeSel = null;
@@ -460,454 +513,427 @@ let placeArrivee = null;
 
 // ---------- POPUP ----------
 function openPopup(title, text){
-popupTitle.innerText = title;
-popupText.innerText = text;
-popupOverlay.style.display = "block";
-popup.style.display = "block";
+  popupTitle.innerText = title;
+  popupText.innerText = text;
+  popupOverlay.style.display = "block";
+  popup.style.display = "block";
 }
 function closePopup(){
-popupOverlay.style.display = "none";
-popup.style.display = "none";
+  popupOverlay.style.display = "none";
+  popup.style.display = "none";
 }
 
 // ---------- STEPPER ----------
 function setStep(n){
-step1.classList.toggle("active", n===1);
-step2.classList.toggle("active", n===2);
-step3.classList.toggle("active", n===3);
+  step1.classList.toggle("active", n===1);
+  step2.classList.toggle("active", n===2);
+  step3.classList.toggle("active", n===3);
 }
 
 // ---------- PAYMENT STATUS ----------
 function showPaymentStatus(type, title, sub){
-paymentStatus.classList.remove("ok","bad");
-paymentStatus.classList.add(type === "ok" ? "ok" : "bad");
-paymentTitle.textContent = title;
-paymentSub.textContent = sub;
-paymentStatus.style.display = "block";
+  paymentStatus.classList.remove("ok","bad");
+  paymentStatus.classList.add(type === "ok" ? "ok" : "bad");
+  paymentTitle.textContent = title;
+  paymentSub.textContent = sub;
+  paymentStatus.style.display = "block";
 }
-function hidePaymentStatus(){
-paymentStatus.style.display = "none";
-}
+function hidePaymentStatus(){ paymentStatus.style.display = "none"; }
 
-// ---------- BUILD SELECTORS ----------
+// ---------- BUILD VEHICLES ----------
 function buildVehicules(){
-vehiculeGrid.innerHTML = "";
-vehicules.forEach((v) => {
-const wrap = document.createElement("div");
-wrap.className = "select-wrap";
+  vehiculeGrid.innerHTML = "";
+  vehicules.forEach((v) => {
+    const wrap = document.createElement("div");
+    wrap.className = "select-wrap";
 
-const img = document.createElement("img");
-img.src = v.img;
-img.alt = v.nom;
-img.className = "select-item";
+    const img = document.createElement("img");
+    img.src = v.img;
+    img.alt = v.nom;
+    img.className = "select-item";
 
-const label = document.createElement("div");
-label.className = "mini-label";
-label.textContent = v.nom;
+    const label = document.createElement("div");
+    label.className = "mini-label";
+    label.textContent = v.nom;
 
-img.onclick = () => {
-document.querySelectorAll("#vehiculeGrid .select-item").forEach(e => e.classList.remove("selected"));
-img.classList.add("selected");
-vehiculeSel = v;
-openPopup(v.nom, v.desc);
-};
+    img.onclick = () => {
+      document.querySelectorAll("#vehiculeGrid .select-item").forEach(e => e.classList.remove("selected"));
+      img.classList.add("selected");
+      vehiculeSel = v;
+      openPopup(v.nom, v.desc);
+    };
 
-wrap.appendChild(img);
-wrap.appendChild(label);
-vehiculeGrid.appendChild(wrap);
-});
+    wrap.appendChild(img);
+    wrap.appendChild(label);
+    vehiculeGrid.appendChild(wrap);
+  });
 }
 
-// ---------- DATE / TIME ----------
+// ---------- DATE/TIME ----------
 function setMinDateToday(){
-const today = new Date();
-const yyyy = today.getFullYear();
-const mm = String(today.getMonth()+1).padStart(2,"0");
-const dd = String(today.getDate()).padStart(2,"0");
-date.min = `${yyyy}-${mm}-${dd}`;
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth()+1).padStart(2,"0");
+  const dd = String(today.getDate()).padStart(2,"0");
+  date.min = `${yyyy}-${mm}-${dd}`;
 }
-
 function addMinutes(d, mins){ return new Date(d.getTime() + mins*60000); }
 
 function generateSlotsForSelectedDate(){
-const selDate = date.value;
-heure.innerHTML = "";
+  const selDate = date.value;
+  heure.innerHTML = "";
 
-const now = new Date();
-let minMinutes = 0;
+  const now = new Date();
+  let minMinutes = 0;
 
-if(selDate){
-const todayStr = now.toISOString().slice(0,10);
+  if(selDate){
+    const todayStr = now.toISOString().slice(0,10);
+    if(selDate === todayStr){
+      const minDT = addMinutes(now, MIN_ADVANCE_MINUTES);
+      const mins = minDT.getHours()*60 + minDT.getMinutes();
+      minMinutes = Math.ceil(mins / 30) * 30;
+    }
+  }
 
-// ✅ si aujourd'hui -> min = maintenant + 2h, arrondi au slot 30 min
-if(selDate === todayStr){
-const minDT = addMinutes(now, MIN_ADVANCE_MINUTES);
-const mins = minDT.getHours()*60 + minDT.getMinutes();
-minMinutes = Math.ceil(mins / 30) * 30;
-}
-}
+  for(let m = 0; m < 24*60; m += 30){
+    if(m < minMinutes) continue;
+    const hh = String(Math.floor(m/60)).padStart(2,"0");
+    const mm = String(m%60).padStart(2,"0");
+    const opt = document.createElement("option");
+    opt.value = `${hh}:${mm}`;
+    opt.textContent = opt.value;
+    heure.appendChild(opt);
+  }
 
-for(let m = 0; m < 24*60; m += 30){
-if(m < minMinutes) continue;
-const hh = String(Math.floor(m/60)).padStart(2,"0");
-const mm = String(m%60).padStart(2,"0");
-const opt = document.createElement("option");
-opt.value = `${hh}:${mm}`;
-opt.textContent = opt.value;
-heure.appendChild(opt);
-}
-
-if(!heure.options.length && selDate){
-openPopup("Indisponible", "Aucun créneau disponible aujourd’hui (réservation minimum 2h à l’avance). Choisissez une autre date.");
-}
+  if(!heure.options.length && selDate){
+    openPopup("Indisponible", "Aucun créneau disponible aujourd’hui (réservation minimum 2h à l’avance). Choisissez une autre date.");
+  }
 }
 
 function parseSelectedDateTime(){
-if(!date.value || !heure.value) return null;
-const [yyyy, m, dd] = date.value.split("-").map(Number);
-const [hh, mi] = heure.value.split(":").map(Number);
-return new Date(yyyy, m-1, dd, hh, mi, 0, 0);
+  if(!date.value || !heure.value) return null;
+  const [yyyy, m, dd] = date.value.split("-").map(Number);
+  const [hh, mi] = heure.value.split(":").map(Number);
+  return new Date(yyyy, m-1, dd, hh, mi, 0, 0);
 }
-
 function isAdvanceOk(){
-const dt = parseSelectedDateTime();
-if(!dt) return false;
-const min = addMinutes(new Date(), MIN_ADVANCE_MINUTES);
-return dt.getTime() >= min.getTime();
+  const dt = parseSelectedDateTime();
+  if(!dt) return false;
+  const min = addMinutes(new Date(), MIN_ADVANCE_MINUTES);
+  return dt.getTime() >= min.getTime();
 }
-
 function isNightBySelectedHour(){
-if(!heure.value) return false;
-const h = parseInt(heure.value.split(":")[0], 10);
-return (h >= 22 || h < 6);
+  if(!heure.value) return false;
+  const h = parseInt(heure.value.split(":")[0], 10);
+  return (h >= 22 || h < 6);
 }
 
-// ---------- GOOGLE PLACES + GEOCODE ----------
+// ---------- PLACES + DEPT CHECK ----------
 function initPlaces(){
-autoDepart = new google.maps.places.Autocomplete(depart, {
-componentRestrictions:{country:"FR"},
-fields:["address_components","formatted_address","geometry"]
-});
-autoArrivee = new google.maps.places.Autocomplete(arrivee, {
-componentRestrictions:{country:"FR"},
-fields:["address_components","formatted_address","geometry"]
-});
+  autoDepart = new google.maps.places.Autocomplete(depart, {
+    componentRestrictions:{country:"FR"},
+    fields:["address_components","formatted_address","geometry"]
+  });
+  autoArrivee = new google.maps.places.Autocomplete(arrivee, {
+    componentRestrictions:{country:"FR"},
+    fields:["address_components","formatted_address","geometry"]
+  });
 
-autoDepart.addListener("place_changed", () => { placeDepart = autoDepart.getPlace(); });
-autoArrivee.addListener("place_changed", () => { placeArrivee = autoArrivee.getPlace(); });
+  autoDepart.addListener("place_changed", () => { placeDepart = autoDepart.getPlace(); });
+  autoArrivee.addListener("place_changed", () => { placeArrivee = autoArrivee.getPlace(); });
 
-depart.addEventListener("input", () => { placeDepart = null; });
-arrivee.addEventListener("input", () => { placeArrivee = null; });
+  depart.addEventListener("input", () => { placeDepart = null; });
+  arrivee.addEventListener("input", () => { placeArrivee = null; });
 }
 
 function getPostalPrefixFromPlace(place){
-if(!place || !place.address_components) return null;
-const pc = place.address_components.find(c => c.types && c.types.includes("postal_code"));
-if(!pc) return null;
-return String(pc.long_name).slice(0,2);
+  if(!place || !place.address_components) return null;
+  const pc = place.address_components.find(c => c.types && c.types.includes("postal_code"));
+  if(!pc) return null;
+  return String(pc.long_name).slice(0,2);
 }
 
 function geocodeAddress(address){
-const geocoder = new google.maps.Geocoder();
-return new Promise((resolve, reject) => {
-geocoder.geocode({ address, region:"FR" }, (results, status) => {
-if(status === "OK" && results && results[0]) resolve(results[0]);
-else reject(status);
-});
-});
+  const geocoder = new google.maps.Geocoder();
+  return new Promise((resolve, reject) => {
+    geocoder.geocode({ address, region:"FR" }, (results, status) => {
+      if(status === "OK" && results && results[0]) resolve(results[0]);
+      else reject(status);
+    });
+  });
 }
 
 async function validateDept06_83(){
-const d = depart.value.trim();
-const a = arrivee.value.trim();
+  const d = depart.value.trim();
+  const a = arrivee.value.trim();
 
-let pfxD = getPostalPrefixFromPlace(placeDepart);
-let pfxA = getPostalPrefixFromPlace(placeArrivee);
+  let pfxD = getPostalPrefixFromPlace(placeDepart);
+  let pfxA = getPostalPrefixFromPlace(placeArrivee);
 
-try{
-if(!pfxD){
-const resD = await geocodeAddress(d);
-pfxD = String(resD.address_components.find(c=>c.types.includes("postal_code"))?.long_name || "").slice(0,2) || null;
-placeDepart = { address_components: resD.address_components, formatted_address: resD.formatted_address, geometry: resD.geometry };
-}
-if(!pfxA){
-const resA = await geocodeAddress(a);
-pfxA = String(resA.address_components.find(c=>c.types.includes("postal_code"))?.long_name || "").slice(0,2) || null;
-placeArrivee = { address_components: resA.address_components, formatted_address: resA.formatted_address, geometry: resA.geometry };
-}
-}catch(e){
-return { ok:false, msg:"Adresse non reconnue. Sélectionne une adresse proposée." };
-}
+  try{
+    if(!pfxD){
+      const resD = await geocodeAddress(d);
+      pfxD = String(resD.address_components.find(c=>c.types.includes("postal_code"))?.long_name || "").slice(0,2) || null;
+      placeDepart = { address_components: resD.address_components, formatted_address: resD.formatted_address, geometry: resD.geometry };
+    }
+    if(!pfxA){
+      const resA = await geocodeAddress(a);
+      pfxA = String(resA.address_components.find(c=>c.types.includes("postal_code"))?.long_name || "").slice(0,2) || null;
+      placeArrivee = { address_components: resA.address_components, formatted_address: resA.formatted_address, geometry: resA.geometry };
+    }
+  }catch(e){
+    return { ok:false, msg:"Adresse non reconnue. Sélectionne une adresse proposée." };
+  }
 
-if(!pfxD || !pfxA){
-return { ok:false, msg:"Impossible de vérifier le code postal. Sélectionne une adresse proposée." };
-}
+  if(!pfxD || !pfxA) return { ok:false, msg:"Impossible de vérifier le code postal. Sélectionne une adresse proposée." };
 
-const ok = ALLOWED_DEPTS.includes(pfxD) && ALLOWED_DEPTS.includes(pfxA);
-if(!ok){
-return { ok:false, msg:"Zone non couverte : uniquement 06 et 83 pour le moment." };
-}
-return { ok:true };
+  const ok = ALLOWED_DEPTS.includes(pfxD) && ALLOWED_DEPTS.includes(pfxA);
+  if(!ok) return { ok:false, msg:"Zone non couverte : uniquement 06 et 83 pour le moment." };
+
+  return { ok:true };
 }
 
 // ---------- MAP ----------
 function initMap(){
-map = new google.maps.Map(document.getElementById("map"), {
-center:{lat:48.8566, lng:2.3522},
-zoom:12
-});
-directionsService = new google.maps.DirectionsService();
-directionsRenderer = new google.maps.DirectionsRenderer({ map });
+  map = new google.maps.Map(document.getElementById("map"), {
+    center:{lat:48.8566, lng:2.3522},
+    zoom:12
+  });
+  directionsService = new google.maps.DirectionsService();
+  directionsRenderer = new google.maps.DirectionsRenderer({ map });
 }
 
 // ---------- PRICING ----------
 function computePrice(km, minutes){
-let prix = 2;
-prix += (km < 15) ? (km * 1.5) : (km * 1.3);
-if(minutes > 5) prix += (minutes - 5) * 0.5;
-if(prix < 10) prix = 10;
+  let prix = 2;
+  prix += (km < 15) ? (km * 1.5) : (km * 1.3);
+  if(minutes > 5) prix += (minutes - 5) * 0.5;
+  if(prix < 10) prix = 10;
 
-prix *= vehiculeSel.coef;
-if(isNightBySelectedHour()) prix *= 1.5;
+  prix *= vehiculeSel.coef;
+  if(isNightBySelectedHour()) prix *= 1.5;
 
-return Math.ceil(prix);
+  return Math.ceil(prix);
 }
 
-// ---------- SMALL HELPERS ----------
-function showOverlay(show){
-overlay.style.display = show ? "block" : "none";
-}
+// ---------- UI helpers ----------
+function showOverlay(show){ overlay.style.display = show ? "block" : "none"; }
 
 function swapSection(hideEl, showEl, step){
-hideEl.classList.add("fade-out");
-setTimeout(()=>{
-hideEl.classList.add("hidden");
-hideEl.classList.remove("fade-out");
+  hideEl.classList.add("fade-out");
+  setTimeout(()=>{
+    hideEl.classList.add("hidden");
+    hideEl.classList.remove("fade-out");
 
-showEl.classList.remove("hidden");
-showEl.classList.add("fade-out");
-requestAnimationFrame(()=> showEl.classList.remove("fade-out"));
+    showEl.classList.remove("hidden");
+    showEl.classList.add("fade-out");
+    requestAnimationFrame(()=> showEl.classList.remove("fade-out"));
 
-setStep(step);
-}, 170);
+    setStep(step);
+  }, 170);
 }
 
-// ---------- SAVE/RESTORE RECAP ----------
+// ---------- SAVE/RESTORE recap for Stripe return ----------
 function saveRecapToLocal(){
-localStorage.setItem("vtc_last_recap", JSON.stringify({
-depart: rDepart.textContent,
-arrivee: rArrivee.textContent,
-dateHeure: rDateHeure.textContent,
-vehicule: rVehicule.textContent,
-distance: rDistance.textContent,
-prix: rPrix.textContent,
-isNight: (badgeNuit.style.display === "block")
-}));
+  localStorage.setItem("vtc_last_recap", JSON.stringify({
+    depart: rDepart.textContent,
+    arrivee: rArrivee.textContent,
+    dateHeure: rDateHeure.textContent,
+    vehicule: rVehicule.textContent,
+    distance: rDistance.textContent,
+    prix: rPrix.textContent,
+    isNight: (badgeNuit.style.display === "block")
+  }));
 }
-
 function restoreRecapFromLocal(){
-const saved = localStorage.getItem("vtc_last_recap");
-if(!saved) return false;
-try{
-const r = JSON.parse(saved);
-rDepart.textContent = r.depart || "";
-rArrivee.textContent = r.arrivee || "";
-rDateHeure.textContent = r.dateHeure || "";
-rVehicule.textContent = r.vehicule || "";
-rDistance.textContent = r.distance || "";
-rPrix.textContent = r.prix || "";
-badgeNuit.style.display = r.isNight ? "block" : "none";
-return true;
-}catch(e){
-return false;
-}
+  const saved = localStorage.getItem("vtc_last_recap");
+  if(!saved) return false;
+  try{
+    const r = JSON.parse(saved);
+    rDepart.textContent = r.depart || "";
+    rArrivee.textContent = r.arrivee || "";
+    rDateHeure.textContent = r.dateHeure || "";
+    rVehicule.textContent = r.vehicule || "";
+    rDistance.textContent = r.distance || "";
+    rPrix.textContent = r.prix || "";
+    badgeNuit.style.display = r.isNight ? "block" : "none";
+    return true;
+  }catch(e){
+    return false;
+  }
 }
 
-// ---------- STRIPE RETURN ----------
+// ---------- Stripe return handling ----------
 function handleStripeReturn(){
-const params = new URLSearchParams(window.location.search);
+  const params = new URLSearchParams(window.location.search);
 
-if(params.get("paid") === "1"){
-showPaymentStatus(
-"ok",
-"Paiement accepté ✅",
-"Vous recevrez bientôt une confirmation de votre chauffeur par SMS."
-);
+  if(params.get("paid") === "1"){
+    showPaymentStatus("ok","Paiement accepté ✅","Vous recevrez bientôt une confirmation de votre chauffeur par SMS.");
 
-const ok = restoreRecapFromLocal();
-if(ok){
-reservationBox.classList.add("hidden");
-clientBox.classList.add("hidden");
-resultBox.classList.remove("hidden");
-setStep(2);
-}
+    const ok = restoreRecapFromLocal();
+    if(ok){
+      reservationBox.classList.add("hidden");
+      clientBox.classList.add("hidden");
+      resultBox.classList.remove("hidden");
+      setStep(2);
+    }
 
-// ✅ cacher Modifier + Valider seulement si paiement accepté
-const bm = document.getElementById("btnModifier");
-const bv = document.getElementById("btnValider");
-if(bm) bm.style.display = "none";
-if(bv) bv.style.display = "none";
-}
+    // ✅ cacher Modifier + Valider seulement si paiement accepté
+    const bm = document.getElementById("btnModifier");
+    const bv = document.getElementById("btnValider");
+    if(bm) bm.style.display = "none";
+    if(bv) bv.style.display = "none";
+  }
 
-if(params.get("canceled") === "1"){
-showPaymentStatus(
-"bad",
-"Paiement refusé / annulé",
-"Veuillez réessayer."
-);
-}
+  if(params.get("canceled") === "1"){
+    showPaymentStatus("bad","Paiement refusé / annulé","Veuillez réessayer.");
+  }
 }
 
 // ---------- FLOW ----------
 async function estimer(){
-hidePaymentStatus();
+  hidePaymentStatus();
 
-const d = depart.value.trim();
-const a = arrivee.value.trim();
-const dt = date.value;
-const hr = heure.value;
+  const d = depart.value.trim();
+  const a = arrivee.value.trim();
+  const dt = date.value;
+  const hr = heure.value;
 
-if(!d || !a || !dt || !hr || !vehiculeSel){
-openPopup("Erreur", "Veuillez remplir tous les champs.");
-return;
-}
+  if(!d || !a || !dt || !hr || !vehiculeSel){
+    openPopup("Erreur", "Veuillez remplir tous les champs.");
+    return;
+  }
 
-// ✅ 2h minimum
-if(!isAdvanceOk()){
-openPopup("Réservation trop proche", "Merci de réserver au minimum 2 heures à l’avance.");
-return;
-}
+  if(!isAdvanceOk()){
+    openPopup("Réservation trop proche", "Merci de réserver au minimum 2 heures à l’avance.");
+    return;
+  }
 
-showOverlay(true);
-const zone = await validateDept06_83();
-if(!zone.ok){
-showOverlay(false);
-openPopup("Erreur", zone.msg);
-return;
-}
+  showOverlay(true);
+  const zone = await validateDept06_83();
+  if(!zone.ok){
+    showOverlay(false);
+    openPopup("Erreur", zone.msg);
+    return;
+  }
 
-swapSection(reservationBox, resultBox, 2);
+  swapSection(reservationBox, resultBox, 2);
 
-// Init map ONLY now
-setTimeout(()=>{
-initMap();
+  setTimeout(()=>{
+    initMap();
 
-directionsService.route({
-origin:d,
-destination:a,
-travelMode: google.maps.TravelMode.DRIVING
-}, (res, status) => {
-showOverlay(false);
+    directionsService.route({
+      origin:d,
+      destination:a,
+      travelMode: google.maps.TravelMode.DRIVING
+    }, (res, status) => {
+      showOverlay(false);
 
-if(status !== "OK"){
-openPopup("Erreur", "Impossible de calculer l’itinéraire. Réessaie.");
-retour();
-return;
-}
+      if(status !== "OK"){
+        openPopup("Erreur", "Impossible de calculer l’itinéraire. Réessaie.");
+        retour();
+        return;
+      }
 
-directionsRenderer.setDirections(res);
+      directionsRenderer.setDirections(res);
 
-const leg = res.routes[0].legs[0];
-const km = leg.distance.value / 1000;
-const minutes = leg.duration.value / 60;
+      const leg = res.routes[0].legs[0];
+      const km = leg.distance.value / 1000;
+      const minutes = leg.duration.value / 60;
 
-const prixFerme = computePrice(km, minutes);
+      const prixFerme = computePrice(km, minutes);
 
-rDepart.textContent = leg.start_address;
-rArrivee.textContent = leg.end_address;
-rDateHeure.textContent = `${dt} • ${hr}`;
-rVehicule.textContent = vehiculeSel.nom;
-rDistance.textContent = `${km.toFixed(2)} km • ${minutes.toFixed(0)} min`;
-rPrix.textContent = `${prixFerme} €`;
+      rDepart.textContent = leg.start_address;
+      rArrivee.textContent = leg.end_address;
+      rDateHeure.textContent = `${dt} • ${hr}`;
+      rVehicule.textContent = vehiculeSel.nom;
+      rDistance.textContent = `${km.toFixed(2)} km • ${minutes.toFixed(0)} min`;
+      rPrix.textContent = `${prixFerme} €`;
 
-badgeNuit.style.display = isNightBySelectedHour() ? "block" : "none";
-});
-}, 200);
+      badgeNuit.style.display = isNightBySelectedHour() ? "block" : "none";
+    });
+  }, 200);
 }
 
 function retour(){
-document.getElementById("map").innerHTML = "";
-swapSection(resultBox, reservationBox, 1);
+  document.getElementById("map").innerHTML = "";
+  swapSection(resultBox, reservationBox, 1);
 }
+function valider(){ swapSection(resultBox, clientBox, 3); }
+function retourApresClient(){ swapSection(clientBox, resultBox, 2); }
 
-function valider(){
-swapSection(resultBox, clientBox, 3);
-}
-
-function retourApresClient(){
-swapSection(clientBox, resultBox, 2);
-}
-
-// ✅ Stripe checkout (tu as déjà la function active)
+// Paiement -> redirection Stripe (function Netlify déjà chez toi)
 async function payer(){
-const n = clientNom.value.trim();
-const p = clientPrenom.value.trim();
-const t = clientTel.value.trim();
+  const nom = clientNom.value.trim();
+  const prenom = clientPrenom.value.trim();
+  const tel = clientTel.value.trim();
 
-if(!n || !p || !t){
-openPopup("Erreur", "Merci de remplir Nom, Prénom et Téléphone.");
-return;
-}
+  if(!nom || !prenom || !tel){
+    openPopup("Erreur", "Merci de remplir Nom, Prénom et Téléphone.");
+    return;
+  }
 
-const price = Number((rPrix.textContent || "").replace(/[^\d]/g, ""));
-if(!price){
-openPopup("Erreur", "Prix introuvable. Réessaie l’estimation.");
-return;
-}
+  const price = Number((rPrix.textContent || "").replace(/[^\d]/g, ""));
+  if(!price){
+    openPopup("Erreur", "Prix introuvable. Réessaie l’estimation.");
+    return;
+  }
 
-// ✅ sauver récap pour retour paid=1
-saveRecapToLocal();
+  // on sauvegarde le récap pour le retour Stripe ?paid=1
+  saveRecapToLocal();
 
-showOverlay(true);
-try{
-const payload = {
-customerName: `${p} ${n}`,
-customerPhone: t,
-pickupAddress: rDepart.textContent || depart.value,
-dropoffAddress: rArrivee.textContent || arrivee.value,
-date: date.value,
-time: heure.value,
-vehicle: vehiculeSel?.nom || "Citadine",
-price
-};
+  showOverlay(true);
+  try{
+    const payload = {
+      customerName: `${prenom} ${nom}`,
+      customerPhone: tel,
+      pickupAddress: rDepart.textContent || depart.value,
+      dropoffAddress: rArrivee.textContent || arrivee.value,
+      date: date.value,
+      time: heure.value,
+      vehicle: vehiculeSel?.nom || "Citadine",
+      price
+    };
 
-const res = await fetch("/.netlify/functions/create-checkout-session",{
-method:"POST",
-headers:{ "Content-Type":"application/json" },
-body: JSON.stringify(payload)
-});
+    const res = await fetch("/.netlify/functions/create-checkout-session",{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify(payload)
+    });
 
-const data = await res.json().catch(()=> ({}));
+    const data = await res.json().catch(()=> ({}));
 
-if(!res.ok){
-showOverlay(false);
-openPopup("Erreur", data.error || "Impossible de lancer le paiement.");
-return;
-}
+    if(!res.ok){
+      showOverlay(false);
+      openPopup("Erreur", data.error || "Impossible de lancer le paiement.");
+      return;
+    }
 
-window.location.href = data.url;
-}catch(e){
-showOverlay(false);
-openPopup("Erreur", "Problème réseau. Réessaie.");
-}
+    window.location.href = data.url;
+  }catch(e){
+    showOverlay(false);
+    openPopup("Erreur", "Problème réseau. Réessaie.");
+  }
 }
 
 // ---------- INIT ----------
 function init(){
-setMinDateToday();
-buildVehicules();
-initPlaces();
+  setMinDateToday();
+  buildVehicules();
+  initPlaces();
 
-generateSlotsForSelectedDate();
-date.addEventListener("change", generateSlotsForSelectedDate);
+  generateSlotsForSelectedDate();
+  date.addEventListener("change", generateSlotsForSelectedDate);
 
-handleStripeReturn();
+  handleStripeReturn();
 }
 
 window.onload = init;
 </script>
 </body>
 </html>
+
+
 
 
 
