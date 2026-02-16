@@ -99,10 +99,10 @@ Le remboursement se fera sous peu.
 Cordialement.`;
 
 const acceptUrl =
-  `https://https://blackrivieravtc.netlify.app/sms.html?tel=${encodeURIComponent(phoneE164)}&msg=${encodeURIComponent(msgAccept)}`;
+  `https://blackrivieravtc.netlify.app/sms.html?tel=${encodeURIComponent(phoneE164)}&msg=${encodeURIComponent(msgAccept)}`;
 
 const declineUrl =
-  `https://https://blackrivieravtc.netlify.app/sms.html?tel=${encodeURIComponent(phoneE164)}&msg=${encodeURIComponent(msgDecline)}`;
+  `https://blackrivieravtc.netlify.app/sms.html?tel=${encodeURIComponent(phoneE164)}&msg=${encodeURIComponent(msgDecline)}`;
 
     const callUrl = phoneE164 ? telLink(phoneE164) : "";
 
@@ -169,5 +169,6 @@ const declineUrl =
     return { statusCode: 500, body: JSON.stringify({ error: "Webhook failed", details: String(e?.message || e) }) };
   }
 };
+
 
 
