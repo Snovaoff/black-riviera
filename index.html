@@ -431,7 +431,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{
     <div class="field">
       <label>Date</label>
       <input type="date" id="date" />
-      <div class="helper">Réservation minimum <b>2h à l’avance</b>.</div>
+      <div class="helper">Réservation minimum <b>30min à l’avance</b>.</div>
     </div>
 
     <div class="field">
@@ -511,13 +511,11 @@ input[type="date"]::-webkit-calendar-picker-indicator{
 <script>
 // ---------- DATA ----------
 const vehicules = [
-  { nom: "Citadine", coef: 1.0, desc: "Tarif standard (prix de base)", img: "https://img.icons8.com/ios-filled/100/car.png" },
-  { nom: "Berline",  coef: 1.1, desc: "Confort premium (majorée +10%)", img: "https://img.icons8.com/ios-filled/100/sedan.png" },
-  { nom: "Van",      coef: 1.2, desc: "Groupes / bagages (majorée +20%)", img: "https://img.icons8.com/ios-filled/100/van.png" }
+  { nom: "Citadine", coef: 1.0, desc: "Tarif standard (prix de base)", img: "https://img.icons8.com/ios-filled/100/car.png", enabled: true },
 ];
 
-const ALLOWED_DEPTS = ["06","83"];
-const MIN_ADVANCE_MINUTES = 120;
+const ALLOWED_DEPTS = ["06","83","13"];
+const MIN_ADVANCE_MINUTES = 30;
 
 // ---------- STATE ----------
 let vehiculeSel = null;
@@ -626,7 +624,7 @@ function generateSlotsForSelectedDate(){
   }
 
   if(!heure.options.length && selDate){
-    openPopup("Indisponible", "Aucun créneau disponible aujourd’hui (réservation minimum 2h à l’avance). Choisissez une autre date.");
+    openPopup("Indisponible", "Aucun créneau disponible aujourd’hui (réservation minimum 30min à l’avance). Choisissez une autre date.");
   }
 }
 
@@ -708,7 +706,7 @@ async function validateDept06_83(){
   if(!pfxD || !pfxA) return { ok:false, msg:"Impossible de vérifier le code postal. Sélectionne une adresse proposée." };
 
   const ok = ALLOWED_DEPTS.includes(pfxD) && ALLOWED_DEPTS.includes(pfxA);
-  if(!ok) return { ok:false, msg:"Zone non couverte : uniquement 06 et 83 pour le moment." };
+  if(!ok) return { ok:false, msg:"Zone non couverte : uniquement 06, 83 et 13 pour le moment." };
 
   return { ok:true };
 }
@@ -731,7 +729,7 @@ function computePrice(km, minutes){
   if(prix < 10) prix = 10;
 
   prix *= vehiculeSel.coef;
-  if(isNightBySelectedHour()) prix *= 1.5;
+  //if(isNightBySelectedHour()) prix *= 1.5;
 
   return Math.ceil(prix);
 }
@@ -914,7 +912,7 @@ async function estimer(){
   }
 
   if(!isAdvanceOk()){
-    openPopup("Réservation trop proche", "Merci de réserver au minimum 2 heures à l’avance.");
+    openPopup("Réservation trop proche", "Merci de réserver au minimum 30min à l’avance.");
     return;
   }
 
@@ -1041,6 +1039,7 @@ window.onload = init;
 </script>
 </body>
 </html>
+
 
 
 
